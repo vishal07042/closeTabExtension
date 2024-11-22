@@ -1,13 +1,25 @@
 // Initialize storage when extension is installed or updated
 chrome.runtime.onInstalled.addListener(() => {
+    resetQuizState();
+});
+
+// Reset state when browser starts
+chrome.runtime.onStartup.addListener(() => {
+    resetQuizState();
+});
+
+function resetQuizState() {
     chrome.storage.local.set({ 
         'questionAnswered': false,
         'firstTabOpened': false 
     });
-});
+}
 
 // Handle new tab creation
 chrome.tabs.onCreated.addListener(async (tab) => {
+    // Reset questionAnswered state for each new tab
+    chrome.storage.local.set({ 'questionAnswered': false });
+    
     if (!tab.url || tab.url === '') return;
     
     const result = await chrome.storage.local.get(['questionAnswered', 'firstTabOpened']);
